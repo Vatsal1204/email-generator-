@@ -2,6 +2,7 @@ streamlit
 torch
 transformers
 pandas
+scikit-learn
+huggingface_hub
 python-dotenv
 email-validator
-huggingface_hub
