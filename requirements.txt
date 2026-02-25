@@ -1,6 +1,7 @@
-streamlit==1.41.1
-torch==2.6.0
-transformers==5.2.0
-pandas==2.2.3
-python-dotenv==1.0.0
-email-validator==2.1.0
+streamlit
+torch
+transformers
+pandas
+python-dotenv
+email-validator
+huggingface_hub
