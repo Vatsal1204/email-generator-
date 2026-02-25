@@ -318,20 +318,45 @@ if 'email_body' not in st.session_state:
 # ============================================
 # LOAD MODEL - SAME LOGIC
 # ============================================
+from huggingface_hub import hf_hub_download
+import os
+
 @st.cache_resource
 def load_model():
+    """Load model from Hugging Face"""
     try:
-        checkpoint = torch.load("ultra_fast_model.pt", weights_only=False, map_location='cpu')
+        # Download model from Hugging Face (cached locally)
+        model_path = hf_hub_download(
+            repo_id="vatsal124/email-classifier",
+            filename="ultra_fast_model.pt",
+            cache_dir="./hf_cache"  # Optional: local cache folder
+        )
+        
+        # Load the model checkpoint
+        checkpoint = torch.load(model_path, weights_only=False, map_location='cpu')
+        
+        # Get label encoder
         encoder = checkpoint['label_encoder']
+        
+        # Initialize model
         model = DistilBertForSequenceClassification.from_pretrained(
-            "distilbert-base-uncased", num_labels=len(encoder.classes_)
+            "distilbert-base-uncased", 
+            num_labels=len(encoder.classes_)
         )
         model.load_state_dict(checkpoint['model_state_dict'])
         model.eval()
+        
+        # Load tokenizer
         tokenizer = DistilBertTokenizer.from_pretrained("distilbert-base-uncased")
+        
         return model, tokenizer, encoder
+        
     except Exception as e:
-        st.error(f"⚠️ Model not found: {e}")
+        st.error(f"⚠️ Failed to load model: {str(e)}")
+        st.info("""
+        The model is downloaded from Hugging Face automatically.
+        Make sure you have internet connection.
+        """)
         return None, None, None
 
 # ============================================
